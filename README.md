@@ -1,14 +1,18 @@
-# Welcome to your CDK TypeScript project
+## Rust Axum web API
 
-This is a blank project for CDK development with TypeScript.
+Purpose: This repository demonstrates how to build a Web API coded in Rust that uses the Axum web framework to achieve the following Todo-based routes
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Steps for Running
 
-## Useful commands
+-   [Install Rust](https://www.rust-lang.org/tools/install)
+-   [Install Docker](https://docs.docker.com/engine/install/)
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+```bash
+# Run docker-compose up
+docker-compose up
+
+```
+
+Create a Todo table in your Local DynamoDB
+
+Explore the Postman collection
