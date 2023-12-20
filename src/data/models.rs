@@ -1,4 +1,3 @@
-// use aws_sdk_dynamodb::{error::SdkError, types::AttributeValue};
 use aws_sdk_dynamodb::error::SdkError;
 use axum::{
     http::StatusCode,
@@ -11,17 +10,25 @@ use thiserror::Error;
 
 use super::services::services::TodoService;
 
+/// Shared Application State for the entire application.
+///
+/// This is a good place to put things like database connections,
+/// logger instances, and other things that you want to share
+/// between all your routes.
 #[derive(Clone)]
 pub struct AppState {
     pub todo_service: TodoService,
 }
 
+/// ApiError is a custom error type that can be returned
 pub enum ApiError {
     DynamoDBError(aws_sdk_dynamodb::Error),
     ItemNotFound(DbError),
     Other(DbError),
 }
 
+/// Todo is the core domain entity that models a Todo object
+/// as stored in DynamoDB
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Todo {
     pub id: String,
@@ -29,6 +36,7 @@ pub struct Todo {
     pub description: String,
 }
 
+/// TodoView is a view model that models a Todo object
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TodoView {
@@ -36,22 +44,30 @@ pub struct TodoView {
     pub description: String,
 }
 
+/// TodoDeleteView is a view model that models a Todo object when being
+/// returned as the output of the delete operation
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TodoDeleteView {
     pub todo_id: String,
 }
 
+/// TodoCreateView is a view model that models a Todo object when being
+/// created from the API POST request
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TodoCreate {
     pub description: String,
 }
 
+/// TodoUpdate is a view model that models a Todo object when being
+/// created from the API PUT /:id request
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TodoUpdate {
     pub description: String,
 }
 
+/// DbError is a custom enum for dealing with tranforming output
+/// from the DynamoDB API
 #[derive(Error, Debug)]
 pub enum DbError {
     #[error("failed to parse response into items: {0}")]
@@ -67,12 +83,24 @@ pub enum DbError {
     OperationError(String),
 }
 
-impl From<aws_sdk_dynamodb::Error> for ApiError {
-    fn from(inner: aws_sdk_dynamodb::Error) -> Self {
-        ApiError::DynamoDBError(inner)
+/// From is a trait implementation for converting from a DynamoDB
+/// error to a DbError
+impl From<aws_sdk_dynamodb::Error> for DbError {
+    fn from(err: aws_sdk_dynamodb::Error) -> Self {
+        DbError::Dynamo(err)
     }
 }
 
+/// From is a trait implementation for converting from a DynamoDB
+/// error to a ApiError
+impl From<aws_sdk_dynamodb::Error> for ApiError {
+    fn from(err: aws_sdk_dynamodb::Error) -> Self {
+        ApiError::DynamoDBError(err)
+    }
+}
+
+/// From is a trait implementation for converting from a DbError
+/// error to a ApiError
 impl From<DbError> for ApiError {
     fn from(inner: DbError) -> Self {
         match inner {
@@ -84,6 +112,8 @@ impl From<DbError> for ApiError {
     }
 }
 
+/// IntoResponse is a trait implementation for converting from an ApiError
+/// into a response for the Axum returns
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (status, error_message) = match self {
@@ -109,12 +139,7 @@ impl IntoResponse for ApiError {
     }
 }
 
-impl From<aws_sdk_dynamodb::Error> for DbError {
-    fn from(err: aws_sdk_dynamodb::Error) -> Self {
-        DbError::Dynamo(err)
-    }
-}
-
+/// From is a trait implementation for converting from a serde_dynamo   
 impl From<serde_dynamo::Error> for DbError {
     fn from(err: serde_dynamo::Error) -> Self {
         DbError::FromSerde(err)

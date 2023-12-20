@@ -8,6 +8,7 @@ use axum::{
     Json,
 };
 
+/// create_todo handles the POST route / at the root level
 pub async fn create_todo(
     State(state): State<AppState>,
     Json(payload): Json<TodoCreate>,
@@ -17,6 +18,7 @@ pub async fn create_todo(
     Ok(r.into())
 }
 
+/// find_todo_by_id handles the GET route /:id at the todo level
 pub async fn find_todo_by_id(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -26,6 +28,7 @@ pub async fn find_todo_by_id(
     Ok(Json(t))
 }
 
+/// delete_todo_by_id handles the DELETE route /:id at the todo level
 pub async fn delete_todo_by_id(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -35,6 +38,7 @@ pub async fn delete_todo_by_id(
     Ok(Json(TodoDeleteView { todo_id: t }))
 }
 
+/// update_todo_by_id handles the PUT route /:id at the todo level
 pub async fn update_todo_by_id(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -50,10 +54,12 @@ pub async fn update_todo_by_id(
     Ok(Json(t))
 }
 
+/// health handles the GET route /health at the root level
 pub async fn health() -> impl IntoResponse {
     (StatusCode::OK, Json("Healthy".to_string()))
 }
 
+/// handler_404 handles the 404 route at the root level
 pub async fn handler_404() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, Json("Path not found"))
 }

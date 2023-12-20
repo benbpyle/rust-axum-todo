@@ -20,6 +20,7 @@ pub mod services {
             TodoService { client, table_name }
         }
 
+        /// delete_to_by_id handles the delete operation against DynamoDB
         pub async fn delete_to_by_id(&self, id: &String) -> Result<String, DbError> {
             let n = std::format!("ID#{}", id);
             let r = self
@@ -31,12 +32,15 @@ pub mod services {
                 .send()
                 .await;
 
+            // nothing to handle on the result, but will return the ID
+            // when Ok and NotFound on Error
             match r {
                 Ok(_) => Ok(n),
                 Err(_) => Err(DbError::NotFound),
             }
         }
 
+        /// find_todo_by_id handles the find operation against DynamoDB
         pub async fn find_todo_by_id(&self, id: &String) -> Result<Todo, DbError> {
             let n = std::format!("ID#{}", id);
             let result = self
@@ -56,6 +60,7 @@ pub mod services {
             }
         }
 
+        /// update_todo_by_id handles the update operation against DynamoDB
         pub async fn update_todo_by_id(
             &self,
             id: &String,
@@ -86,6 +91,7 @@ pub mod services {
             }
         }
 
+        /// create_todo handles the create operation against DynamoDB
         pub async fn create_todo(&self, description: &String) -> Result<Todo, Error> {
             let id = Uuid::new_v4();
             let todo_id: String = std::format!("ID#{}", id);
