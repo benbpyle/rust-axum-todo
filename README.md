@@ -2,7 +2,7 @@
 
 Purpose: This repository demonstrates how to build a Web API coded in Rust that uses the Axum web framework to achieve the following Todo-based routes
 
-This repository supports the [article hosted on Binaryheap.com]()
+This repository supports the [article hosted on Binaryheap.com](https://www.binaryheap.com/web-api-rust-fargate/)
 
 ## Steps for Running
 
